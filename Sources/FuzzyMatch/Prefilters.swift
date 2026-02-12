@@ -82,6 +82,33 @@ internal func isCombiningMark(lead: UInt8, second: UInt8) -> Bool {
     (lead == 0xCD && second >= 0x80 && second <= 0xAF)
 }
 
+/// Maps a lowercased Latin-1 Supplement second byte to its ASCII base letter.
+///
+/// Returns the ASCII letter (e.g., `0x61` for 'a') if the character is a diacritic
+/// variant of an ASCII letter, or `0` if no mapping exists. Characters returning `0`
+/// include ligatures (æ), distinct letters (ð, þ, ø, ß), and non-letters (×, ÷).
+///
+/// This function expects the second byte to already be lowercased (in range 0xA0–0xBF
+/// for letters). Call ``lowercaseLatinExtended(_:)`` first if the byte may be uppercase.
+///
+/// - Parameter lowercasedSecondByte: The lowercased second byte of a 0xC3-prefixed UTF-8 sequence.
+/// - Returns: The ASCII base letter (0x61–0x7A), or `0` if no mapping exists.
+@inlinable
+internal func latin1ToASCII(_ lowercasedSecondByte: UInt8) -> UInt8 {
+    switch lowercasedSecondByte {
+    case 0xA0...0xA5: return 0x61  // à-å → a
+    case 0xA7: return 0x63          // ç → c
+    case 0xA8...0xAB: return 0x65  // è-ë → e
+    case 0xAC...0xAF: return 0x69  // ì-ï → i
+    case 0xB1: return 0x6E          // ñ → n
+    case 0xB2...0xB6: return 0x6F  // ò-ö → o
+    case 0xB9...0xBC: return 0x75  // ù-ü → u
+    case 0xBD: return 0x79          // ý → y
+    case 0xBF: return 0x79          // ÿ → y
+    default: return 0               // æ, ð, ø, þ, ß, ×, ÷ — no ASCII base
+    }
+}
+
 /// Lowercases the second byte of a 2-byte UTF-8 Latin-1 Supplement sequence.
 ///
 /// Uppercase Latin-1 Supplement characters (U+00C0-U+00DE, except U+00D7 ×)
@@ -187,9 +214,16 @@ internal func lowercaseUTF8(
             if i + 1 < count && isCombiningMark(lead: byte, second: source[i + 1]) {
                 i += 2
             } else if byte == 0xC3 && i + 1 < count {
-                destination[outIdx] = byte
-                destination[outIdx + 1] = lowercaseLatinExtended(source[i + 1])
-                outIdx += 2
+                let lowered = lowercaseLatinExtended(source[i + 1])
+                let ascii = latin1ToASCII(lowered)
+                if ascii != 0 {
+                    destination[outIdx] = ascii
+                    outIdx += 1
+                } else {
+                    destination[outIdx] = byte
+                    destination[outIdx + 1] = lowered
+                    outIdx += 2
+                }
                 i += 2
             } else if (byte == 0xCE || byte == 0xCF) && i + 1 < count {
                 let (newLead, newSecond) = lowercaseGreek(lead: byte, second: source[i + 1])
@@ -306,16 +340,25 @@ internal func computeCharBitmaskCaseInsensitive(_ bytes: Span<UInt8>) -> UInt64 
         if isMultiByteLead(byte) && i + 1 < bytes.count {
             let second = bytes[i + 1]
             // Lowercase the pair, then hash
-            let lowered: (UInt8, UInt8)
             if byte == 0xC3 {
-                lowered = (byte, lowercaseLatinExtended(second))
+                let lowered = lowercaseLatinExtended(second)
+                let ascii = latin1ToASCII(lowered)
+                if ascii != 0 {
+                    // Diacritic normalizes to ASCII — use ASCII bit (0-25)
+                    mask |= charBitmaskLookup[Int(ascii)] & charBitmaskMask
+                } else {
+                    let bit = charBitmaskBit2Byte(lead: byte, second: lowered)
+                    mask |= (1 << bit)
+                }
             } else if byte == 0xCE || byte == 0xCF {
-                lowered = lowercaseGreek(lead: byte, second: second)
+                let lowered = lowercaseGreek(lead: byte, second: second)
+                let bit = charBitmaskBit2Byte(lead: lowered.0, second: lowered.1)
+                mask |= (1 << bit)
             } else {
-                lowered = lowercaseCyrillic(lead: byte, second: second)
+                let lowered = lowercaseCyrillic(lead: byte, second: second)
+                let bit = charBitmaskBit2Byte(lead: lowered.0, second: lowered.1)
+                mask |= (1 << bit)
             }
-            let bit = charBitmaskBit2Byte(lead: lowered.0, second: lowered.1)
-            mask |= (1 << bit)
             i += 2
         } else {
             mask |= charBitmaskLookup[Int(byte)] & charBitmaskMask

@@ -136,23 +136,44 @@ extension FuzzyMatcher {
                 if idx + 1 < candidateLength && isCombiningMark(lead: byte, second: candidateUTF8[idx + 1]) {
                     idx += 2
                 } else if byte == 0xC3 && idx + 1 < candidateLength {
-                    candidateStorage.bytes[outIdx] = byte
-                    candidateStorage.bytes[outIdx + 1] = lowercaseLatinExtended(candidateUTF8[idx + 1])
-                    let posBonus: Int32
-                    if outIdx == 0 {
-                        posBonus = bonusBoundaryWhitespaceVal
+                    let lowered = lowercaseLatinExtended(candidateUTF8[idx + 1])
+                    let ascii = latin1ToASCII(lowered)
+                    if ascii != 0 {
+                        // Latin-1 diacritic normalizes to ASCII — emit single byte
+                        candidateStorage.bytes[outIdx] = ascii
+                        let posBonus: Int32
+                        if outIdx == 0 {
+                            posBonus = bonusBoundaryWhitespaceVal
+                        } else {
+                            posBonus = multiByteBonusTier(
+                                prevByte: prevByte,
+                                bonusBoundary: bonusBoundaryVal,
+                                bonusBoundaryWhitespace: bonusBoundaryWhitespaceVal,
+                                bonusBoundaryDelimiter: bonusBoundaryDelimiterVal
+                            )
+                        }
+                        candidateStorage.bonus[outIdx] = posBonus
+                        prevByte = candidateUTF8[idx + 1]
+                        outIdx += 1
                     } else {
-                        posBonus = multiByteBonusTier(
-                            prevByte: prevByte,
-                            bonusBoundary: bonusBoundaryVal,
-                            bonusBoundaryWhitespace: bonusBoundaryWhitespaceVal,
-                            bonusBoundaryDelimiter: bonusBoundaryDelimiterVal
-                        )
+                        candidateStorage.bytes[outIdx] = byte
+                        candidateStorage.bytes[outIdx + 1] = lowered
+                        let posBonus: Int32
+                        if outIdx == 0 {
+                            posBonus = bonusBoundaryWhitespaceVal
+                        } else {
+                            posBonus = multiByteBonusTier(
+                                prevByte: prevByte,
+                                bonusBoundary: bonusBoundaryVal,
+                                bonusBoundaryWhitespace: bonusBoundaryWhitespaceVal,
+                                bonusBoundaryDelimiter: bonusBoundaryDelimiterVal
+                            )
+                        }
+                        candidateStorage.bonus[outIdx] = posBonus
+                        candidateStorage.bonus[outIdx + 1] = 0
+                        prevByte = candidateUTF8[idx + 1]
+                        outIdx += 2
                     }
-                    candidateStorage.bonus[outIdx] = posBonus
-                    candidateStorage.bonus[outIdx + 1] = 0
-                    prevByte = candidateUTF8[idx + 1]
-                    outIdx += 2
                     idx += 2
                 } else if (byte == 0xCE || byte == 0xCF) && idx + 1 < candidateLength {
                     let (newLead, newSecond) = lowercaseGreek(lead: byte, second: candidateUTF8[idx + 1])

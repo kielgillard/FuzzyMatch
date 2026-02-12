@@ -277,7 +277,12 @@ internal func computeBoundaryMaskCompressed(
             if isMultiByteLead(byte) && inIdx + 1 < count {
                 prevMeaningfulByte = originalBytes[inIdx + 1]
                 inIdx += 2
-                outIdx += 2
+                // Latin-1 diacritics that normalize to ASCII collapse from 2 bytes to 1
+                if byte == 0xC3 && latin1ToASCII(lowercaseLatinExtended(prevMeaningfulByte)) != 0 {
+                    outIdx += 1
+                } else {
+                    outIdx += 2
+                }
             } else {
                 prevMeaningfulByte = byte
                 inIdx += 1

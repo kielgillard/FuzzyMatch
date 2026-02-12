@@ -967,13 +967,50 @@ public struct FuzzyMatcher: Sendable {
             return nil
         }
 
+        // Exact match: 2-byte Latin-1 candidate normalizes to same ASCII letter
+        if candidateLength == 2 && candidateUTF8[0] == 0xC3 {
+            let lowered = lowercaseLatinExtended(candidateUTF8[1])
+            if latin1ToASCII(lowered) == q0 {
+                return ScoredMatch(score: 1.0, kind: .exact)
+            }
+        }
+
         // Scan for best match position
         var bestPos = -1
         var bestIsBoundary = false
         var i = 0
         while i < candidateLength {
             let byte = candidateUTF8[i]
-            // Skip 2-byte sequences (Latin-1, Greek, Cyrillic)
+            // Check Latin-1 diacritics that normalize to ASCII
+            if byte == 0xC3 && i + 1 < candidateLength {
+                let lowered = lowercaseLatinExtended(candidateUTF8[i + 1])
+                let ascii = latin1ToASCII(lowered)
+                if ascii == q0 {
+                    // Diacritic normalizes to query char — treat as match at position i
+                    if i == 0 {
+                        var score = 1.0
+                        let bonus = edConfig.wordBoundaryBonus + edConfig.firstMatchBonus
+                        score = min(score + bonus, 1.0)
+                        let lengthPenalty = Double(candidateLength - 1) * edConfig.lengthPenalty
+                        score -= lengthPenalty
+                        score += min(lengthPenalty * 0.9, 0.15)
+                        score = min(score, 1.0)
+                        if score >= minScore {
+                            return ScoredMatch(score: score, kind: .prefix)
+                        }
+                        return nil
+                    }
+                    let isBound = isWordBoundaryInline(at: i, prev: candidateUTF8[i - 1], curr: byte)
+                    if bestPos == -1 || (!bestIsBoundary && isBound) {
+                        bestPos = i
+                        bestIsBoundary = isBound
+                        if isBound { break }
+                    }
+                }
+                i += 2
+                continue
+            }
+            // Skip other 2-byte sequences (Greek, Cyrillic)
             if isMultiByteLead(byte) {
                 i += 2
                 continue
