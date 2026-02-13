@@ -24,6 +24,17 @@ let package = Package(
             plugins: [
                 .plugin(name: "BenchmarkPlugin", package: "package-benchmark")
             ]
+        ),
+        .executableTarget(
+            name: "CorpusBenchmark",
+            dependencies: [
+                .product(name: "FuzzyMatch", package: "FuzzyMatch"),
+                .product(name: "Benchmark", package: "package-benchmark")
+            ],
+            path: "Benchmarks/CorpusBenchmark",
+            plugins: [
+                .plugin(name: "BenchmarkPlugin", package: "package-benchmark")
+            ]
         )
     ]
 )

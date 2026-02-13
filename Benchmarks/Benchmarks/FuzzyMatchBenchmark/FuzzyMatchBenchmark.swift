@@ -312,7 +312,8 @@ let benchmarks: @Sendable () -> Void = {
     Benchmark(
         "Query preparation throughput",
         configuration: .init(
-            metrics: [.cpuTotal, .wallClock, .throughput],
+            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
+            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
             warmupIterations: 3,
             scalingFactor: .mega
         )
@@ -332,7 +333,8 @@ let benchmarks: @Sendable () -> Void = {
     Benchmark(
         "Prefilter rejection (best case - no matches)",
         configuration: .init(
-            metrics: [.cpuTotal, .wallClock, .throughput],
+            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
+            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
             warmupIterations: 3,
             scalingFactor: .kilo
         )
@@ -352,7 +354,8 @@ let benchmarks: @Sendable () -> Void = {
     Benchmark(
         "Prefilter pass-through (worst case - many potential matches)",
         configuration: .init(
-            metrics: [.cpuTotal, .wallClock, .throughput],
+            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
+            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
             warmupIterations: 3,
             scalingFactor: .kilo
         )
@@ -374,7 +377,8 @@ let benchmarks: @Sendable () -> Void = {
     Benchmark(
         "Full scoring - 1 char query",
         configuration: .init(
-            metrics: [.cpuTotal, .wallClock, .throughput],
+            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
+            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
             warmupIterations: 3,
             scalingFactor: .kilo
         )
@@ -394,7 +398,8 @@ let benchmarks: @Sendable () -> Void = {
     Benchmark(
         "Full scoring - 3 char query",
         configuration: .init(
-            metrics: [.cpuTotal, .wallClock, .throughput],
+            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
+            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
             warmupIterations: 3,
             scalingFactor: .kilo
         )
@@ -414,7 +419,8 @@ let benchmarks: @Sendable () -> Void = {
     Benchmark(
         "Full scoring - 5 char query",
         configuration: .init(
-            metrics: [.cpuTotal, .wallClock, .throughput],
+            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
+            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
             warmupIterations: 3,
             scalingFactor: .kilo
         )
@@ -434,7 +440,8 @@ let benchmarks: @Sendable () -> Void = {
     Benchmark(
         "Full scoring - 10 char query",
         configuration: .init(
-            metrics: [.cpuTotal, .wallClock, .throughput],
+            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
+            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
             warmupIterations: 3,
             scalingFactor: .kilo
         )
@@ -456,7 +463,8 @@ let benchmarks: @Sendable () -> Void = {
     Benchmark(
         "Full dataset scoring (1M candidates, single-threaded)",
         configuration: .init(
-            metrics: [.cpuTotal, .wallClock, .throughput],
+            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
+            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
             warmupIterations: 1,
             scalingFactor: .one
         )
@@ -482,7 +490,8 @@ let benchmarks: @Sendable () -> Void = {
     Benchmark(
         "Concurrent scoring (4 workers, 1M candidates)",
         configuration: .init(
-            metrics: [.cpuTotal, .wallClock, .throughput],
+            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
+            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
             warmupIterations: 1,
             scalingFactor: .one
         )
@@ -508,7 +517,8 @@ let benchmarks: @Sendable () -> Void = {
     Benchmark(
         "Concurrent scoring (8 workers, 1M candidates)",
         configuration: .init(
-            metrics: [.cpuTotal, .wallClock, .throughput],
+            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
+            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
             warmupIterations: 1,
             scalingFactor: .one
         )
@@ -534,7 +544,8 @@ let benchmarks: @Sendable () -> Void = {
     Benchmark(
         "Concurrent scoring (16 workers, 1M candidates)",
         configuration: .init(
-            metrics: [.cpuTotal, .wallClock, .throughput],
+            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
+            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
             warmupIterations: 1,
             scalingFactor: .one
         )
@@ -562,7 +573,8 @@ let benchmarks: @Sendable () -> Void = {
     Benchmark(
         "Best case - early rejection (uncommon query)",
         configuration: .init(
-            metrics: [.cpuTotal, .wallClock, .throughput],
+            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
+            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
             warmupIterations: 3,
             scalingFactor: .kilo
         )
@@ -582,7 +594,8 @@ let benchmarks: @Sendable () -> Void = {
     Benchmark(
         "Worst case - many matches (common query)",
         configuration: .init(
-            metrics: [.cpuTotal, .wallClock, .throughput],
+            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
+            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
             warmupIterations: 3,
             scalingFactor: .kilo
         )
@@ -604,7 +617,8 @@ let benchmarks: @Sendable () -> Void = {
     Benchmark(
         "Long strings (32KB) - short query (3 char)",
         configuration: .init(
-            metrics: [.cpuTotal, .wallClock, .throughput],
+            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
+            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
             warmupIterations: 2,
             scalingFactor: .one
         )
@@ -624,7 +638,8 @@ let benchmarks: @Sendable () -> Void = {
     Benchmark(
         "Long strings (32KB) - medium query (6 char)",
         configuration: .init(
-            metrics: [.cpuTotal, .wallClock, .throughput],
+            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
+            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
             warmupIterations: 2,
             scalingFactor: .one
         )
@@ -644,7 +659,8 @@ let benchmarks: @Sendable () -> Void = {
     Benchmark(
         "Long strings (32KB) - long query (12 char)",
         configuration: .init(
-            metrics: [.cpuTotal, .wallClock, .throughput],
+            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
+            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
             warmupIterations: 2,
             scalingFactor: .one
         )
@@ -664,7 +680,8 @@ let benchmarks: @Sendable () -> Void = {
     Benchmark(
         "Long strings (64KB) - medium query (6 char)",
         configuration: .init(
-            metrics: [.cpuTotal, .wallClock, .throughput],
+            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
+            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
             warmupIterations: 2,
             scalingFactor: .one
         )
@@ -684,7 +701,8 @@ let benchmarks: @Sendable () -> Void = {
     Benchmark(
         "Long strings (32KB) - no match query",
         configuration: .init(
-            metrics: [.cpuTotal, .wallClock, .throughput],
+            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
+            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
             warmupIterations: 2,
             scalingFactor: .one
         )
@@ -706,7 +724,8 @@ let benchmarks: @Sendable () -> Void = {
     Benchmark(
         "Long strings (32KB) - concurrent 4 workers",
         configuration: .init(
-            metrics: [.cpuTotal, .wallClock, .throughput],
+            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
+            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
             warmupIterations: 2,
             scalingFactor: .one
         )
@@ -732,7 +751,8 @@ let benchmarks: @Sendable () -> Void = {
     Benchmark(
         "Long strings (32KB) - concurrent 8 workers",
         configuration: .init(
-            metrics: [.cpuTotal, .wallClock, .throughput],
+            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
+            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
             warmupIterations: 2,
             scalingFactor: .one
         )
@@ -758,7 +778,8 @@ let benchmarks: @Sendable () -> Void = {
     Benchmark(
         "Long strings (64KB) - concurrent 4 workers",
         configuration: .init(
-            metrics: [.cpuTotal, .wallClock, .throughput],
+            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
+            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
             warmupIterations: 2,
             scalingFactor: .one
         )
@@ -784,7 +805,8 @@ let benchmarks: @Sendable () -> Void = {
     Benchmark(
         "Long strings (64KB) - concurrent 8 workers",
         configuration: .init(
-            metrics: [.cpuTotal, .wallClock, .throughput],
+            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
+            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
             warmupIterations: 2,
             scalingFactor: .one
         )
