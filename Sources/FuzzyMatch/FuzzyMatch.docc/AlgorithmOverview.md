@@ -188,7 +188,7 @@ For single-word queries of 2–8 characters, Smith-Waterman mode includes an acr
 |--------|--------------|----------------|
 | Typo tolerance | Excellent (Damerau-Levenshtein) | Limited (no edit distance) |
 | Multi-word queries | Basic (single alignment) | Excellent (atom splitting) |
-| Throughput | Good (~18M/sec) | Higher (~31M/sec) |
+| Throughput | Good (~26M/sec) | Higher (~44M/sec) |
 | Match types | exact, prefix, substring, acronym | alignment, acronym |
 | Scoring model | Penalty-driven (distance → score) | Bonus-driven (alignment → score) |
 | Best for | Autocomplete, typo-tolerant search | Code/file search, high throughput |

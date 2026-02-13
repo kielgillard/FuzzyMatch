@@ -242,6 +242,46 @@ When asked to "prepare release", execute the following steps. **Maximize paralle
 
 Note: Do NOT include Ifrit or Contains in the benchmark or quality runs unless explicitly requested by the user. Both are extremely slow to benchmark and would dominate the runtime. Use existing reference numbers for Ifrit and Contains in COMPARISON.md and only re-run when explicitly asked. Add a note in COMPARISON.md: "Note: Ifrit and Contains were not included in this run. Run with --ifrit --contains for a full comparison."
 
+## fuzzygrep Benchmarks
+
+The `Examples/` directory includes `fuzzygrep`, a parallel grep-like tool. To benchmark it:
+
+### 1. Generate test files
+
+```bash
+{ echo "color"; awk 'BEGIN{for(i=1;i<=10000000;i++) print "line " i}'; echo "colour"; } > /tmp/fuzzygrep-10M.txt
+{ echo "color"; awk 'BEGIN{for(i=1;i<=100000000;i++) print "line " i}'; echo "colour"; } > /tmp/fuzzygrep-100M.txt
+{ echo "color"; awk 'BEGIN{for(i=1;i<=1000000000;i++) print "line " i}'; echo "colour"; } > /tmp/fuzzygrep-1B.txt
+```
+
+The 1B file takes several minutes to generate (~14 GB). Generate 10M and 100M first, run benchmarks on those while 1B generates in the background.
+
+### 2. Build fuzzygrep
+
+```bash
+swift build --package-path Examples -c release
+```
+
+### 3. Run benchmarks
+
+Use query `1235321 -score 0.5` to exercise the full matching pipeline (prefilter + scoring), not just prefilter rejection:
+
+**Edit Distance mode (default):**
+```bash
+time .build/release/fuzzygrep 1235321 -score 0.5 < /tmp/fuzzygrep-10M.txt > /dev/null
+time .build/release/fuzzygrep 1235321 -score 0.5 < /tmp/fuzzygrep-100M.txt > /dev/null
+time .build/release/fuzzygrep 1235321 -score 0.5 < /tmp/fuzzygrep-1B.txt > /dev/null
+```
+
+**Smith-Waterman mode:**
+```bash
+time .build/release/fuzzygrep 1235321 --sw -score 0.5 < /tmp/fuzzygrep-10M.txt > /dev/null
+time .build/release/fuzzygrep 1235321 --sw -score 0.5 < /tmp/fuzzygrep-100M.txt > /dev/null
+time .build/release/fuzzygrep 1235321 --sw -score 0.5 < /tmp/fuzzygrep-1B.txt > /dev/null
+```
+
+Use `bash -c 'time ...' 2>&1` for clean output when capturing results programmatically. Run each size twice to verify stability. Update the fuzzygrep table in README.md with fresh numbers.
+
 ## Agent Usage
 
 Always use subagents (the Task tool) when possible and beneficial. Prefer launching parallel subagents for independent work such as:

@@ -53,19 +53,19 @@ In Smith-Waterman mode, FuzzyMatch trades typo tolerance for higher throughput a
 |--------|---------|---------|--------|
 | Hit rate | **197/197** | 187/197 | 190/197 |
 | Top-1 agreement with nucleo | 77/197 | **182/197** | — |
-| Throughput | 18M/sec | 31M/sec | 58M/sec |
+| Throughput | 26M/sec | 44M/sec | 86M/sec |
 
 FuzzyMatch (SW) agrees with nucleo on 92% of top-1 rankings (182/197). It excels at multi-word queries and long descriptive searches, but loses 10 queries that require edit distance typo tolerance. Use Smith-Waterman mode when you need maximum throughput or nucleo-compatible behavior; use the default edit distance mode when typo tolerance matters.
 
 ## Performance
 
-FuzzyMatch processes ~18 million candidates per second in edit distance mode and ~31 million in Smith-Waterman mode on Apple Silicon (M3 Max). While nucleo (Rust, Smith-Waterman variant) is 1.3–4.9x faster in raw throughput, both FuzzyMatch modes comfortably handle interactive-speed search:
+FuzzyMatch processes ~26 million candidates per second in edit distance mode and ~44 million in Smith-Waterman mode on Apple Silicon (M4 Max). While nucleo (Rust, Smith-Waterman variant) is 1.3–4.9x faster in raw throughput, both FuzzyMatch modes comfortably handle interactive-speed search:
 
 | | Throughput |
 |---|---|
-| nucleo (Rust) | ~58M candidates/sec |
-| FuzzyMatch — SW (Swift) | ~31M candidates/sec |
-| FuzzyMatch — ED (Swift) | ~18M candidates/sec |
+| nucleo (Rust) | ~86M candidates/sec |
+| FuzzyMatch — SW (Swift) | ~44M candidates/sec |
+| FuzzyMatch — ED (Swift) | ~26M candidates/sec |
 
 The gap narrows to **1.3x** for exact symbol queries and widens to **4.9x** for exact name queries where FuzzyMatch's longer-query scoring overhead dominates.
 
@@ -75,9 +75,9 @@ Typical performance on Apple Silicon:
 
 | Scenario | Time |
 |----------|------|
-| Query preparation | ~1.9 μs |
-| 1M dataset (single-threaded) | ~32 ms |
-| 1M dataset (8 workers) | ~5 ms |
+| Query preparation | ~2.2 μs |
+| 1M dataset (single-threaded) | ~36 ms |
+| 1M dataset (8 workers) | ~4.8 ms |
 
 Run benchmarks locally with:
 
