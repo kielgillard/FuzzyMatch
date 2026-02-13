@@ -1,4 +1,4 @@
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 //
 // This source file is part of the FuzzyMatch open source project
 //
@@ -9,10 +9,10 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 //
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 
-import Testing
 @testable import FuzzyMatch
+import Testing
 
 // MARK: - Algorithm Boundary Tests
 //
@@ -251,7 +251,7 @@ import Testing
     var buffer = matcher.makeBuffer()
 
     // Create a string just under the boundary
-    let longString = String(repeating: "a", count: 1000)
+    let longString = String(repeating: "a", count: 1_000)
     let query = matcher.prepare(longString)
 
     let result = matcher.score(longString, against: query, buffer: &buffer)
@@ -283,9 +283,9 @@ import Testing
     let matcher = FuzzyMatcher(config: MatchConfig(minScore: 0.0, algorithm: .editDistance(EditDistanceConfig(maxEditDistance: 2))))
     var buffer = matcher.makeBuffer()
 
-    let base = String(repeating: "a", count: 2000)
+    let base = String(repeating: "a", count: 2_000)
     var candidateChars = Array(base)
-    candidateChars[1000] = "b" // Single substitution in the middle
+    candidateChars[1_000] = "b" // Single substitution in the middle
     let candidate = String(candidateChars)
     let query = matcher.prepare(base)
 
@@ -297,7 +297,7 @@ import Testing
     let matcher = FuzzyMatcher(config: MatchConfig(minScore: 0.0, algorithm: .editDistance(EditDistanceConfig(maxEditDistance: 2))))
     var buffer = matcher.makeBuffer()
 
-    let prefix = String(repeating: "a", count: 1998)
+    let prefix = String(repeating: "a", count: 1_998)
     let queryStr = prefix + "ba"
     let candidateStr = prefix + "ab"
     let query = matcher.prepare(queryStr)
@@ -311,7 +311,7 @@ import Testing
     let matcher = FuzzyMatcher()
     var buffer = matcher.makeBuffer()
 
-    let pattern = String(repeating: "abcdefghij", count: 1000) // 10000 chars
+    let pattern = String(repeating: "abcdefghij", count: 1_000) // 10000 chars
     let query = matcher.prepare(pattern)
 
     let result = matcher.score(pattern, against: query, buffer: &buffer)
@@ -322,9 +322,9 @@ import Testing
 
 @Test func largeStringEditDistanceDirectly() {
     // Test the edit distance function directly at 2K scale
-    let base = String(repeating: "a", count: 2000)
+    let base = String(repeating: "a", count: 2_000)
     var candidateStr = base
-    let idx = candidateStr.index(candidateStr.startIndex, offsetBy: 1000)
+    let idx = candidateStr.index(candidateStr.startIndex, offsetBy: 1_000)
     candidateStr.replaceSubrange(idx...idx, with: "b")
 
     let query: [UInt8] = Array(base.utf8)
@@ -347,7 +347,7 @@ import Testing
     var buffer = matcher.makeBuffer()
 
     // Place "needle" in the middle of a 5000-char string
-    let padding = String(repeating: "x", count: 2497)
+    let padding = String(repeating: "x", count: 2_497)
     let candidate = padding + "needle" + padding
     let query = matcher.prepare("needle")
 

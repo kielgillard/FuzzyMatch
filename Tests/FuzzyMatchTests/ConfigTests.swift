@@ -1,4 +1,4 @@
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 //
 // This source file is part of the FuzzyMatch open source project
 //
@@ -9,11 +9,11 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 //
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 
 import Foundation
-import Testing
 @testable import FuzzyMatch
+import Testing
 
 // MARK: - maxEditDistance Configuration
 
@@ -195,13 +195,15 @@ import Testing
     let candidate = "testing"
 
     // Low prefix weight
-    let matcher1 = FuzzyMatcher(config: MatchConfig(minScore: 0.0, algorithm: .editDistance(EditDistanceConfig(prefixWeight: 1.0, substringWeight: 1.0))))
+    let edConfig1 = EditDistanceConfig(prefixWeight: 1.0, substringWeight: 1.0)
+    let matcher1 = FuzzyMatcher(config: MatchConfig(minScore: 0.0, algorithm: .editDistance(edConfig1)))
     var buffer1 = matcher1.makeBuffer()
     let query1 = matcher1.prepare(query)
     let score1 = matcher1.score(candidate, against: query1, buffer: &buffer1)?.score ?? 0
 
     // High prefix weight
-    let matcher2 = FuzzyMatcher(config: MatchConfig(minScore: 0.0, algorithm: .editDistance(EditDistanceConfig(prefixWeight: 2.0, substringWeight: 1.0))))
+    let edConfig2 = EditDistanceConfig(prefixWeight: 2.0, substringWeight: 1.0)
+    let matcher2 = FuzzyMatcher(config: MatchConfig(minScore: 0.0, algorithm: .editDistance(edConfig2)))
     var buffer2 = matcher2.makeBuffer()
     let query2 = matcher2.prepare(query)
     let score2 = matcher2.score(candidate, against: query2, buffer: &buffer2)?.score ?? 0
@@ -262,7 +264,8 @@ import Testing
 }
 
 @Test func substringWeightCappedAtOne() {
-    let matcher = FuzzyMatcher(config: MatchConfig(minScore: 0.0, algorithm: .editDistance(EditDistanceConfig(prefixWeight: 1.0, substringWeight: 5.0))))
+    let edConfig = EditDistanceConfig(prefixWeight: 1.0, substringWeight: 5.0)
+    let matcher = FuzzyMatcher(config: MatchConfig(minScore: 0.0, algorithm: .editDistance(edConfig)))
     let query = matcher.prepare("test")
     var buffer = matcher.makeBuffer()
 
@@ -445,7 +448,8 @@ import Testing
     let actualScore = baseResult?.score ?? 0.0
 
     for threshold in thresholds {
-        let matcher = FuzzyMatcher(config: MatchConfig(minScore: threshold, algorithm: .editDistance(EditDistanceConfig(maxEditDistance: 2))))
+        let edConfig = EditDistanceConfig(maxEditDistance: 2)
+        let matcher = FuzzyMatcher(config: MatchConfig(minScore: threshold, algorithm: .editDistance(edConfig)))
         let query = matcher.prepare("hello")
         var buffer = matcher.makeBuffer()
 
@@ -494,7 +498,7 @@ import Testing
         ("hello", "helo"),
         ("test", "testing"),
         ("world", "worl"),
-        ("fuzzy", "fzzy"),
+        ("fuzzy", "fzzy")
     ]
 
     for (q, c) in pairs {
@@ -505,7 +509,8 @@ import Testing
         let exactScore = baseResult.score
 
         // Now test with minScore set to exactly the computed score
-        let matcher = FuzzyMatcher(config: MatchConfig(minScore: exactScore, algorithm: .editDistance(EditDistanceConfig(maxEditDistance: 2))))
+        let edConfig = EditDistanceConfig(maxEditDistance: 2)
+        let matcher = FuzzyMatcher(config: MatchConfig(minScore: exactScore, algorithm: .editDistance(edConfig)))
         let query = matcher.prepare(q)
         var buffer = matcher.makeBuffer()
 
@@ -525,7 +530,8 @@ import Testing
     }
     let exactScore = baseResult.score
 
-    let matcher = FuzzyMatcher(config: MatchConfig(minScore: exactScore + 0.001, algorithm: .editDistance(EditDistanceConfig(maxEditDistance: 2))))
+    let edConfig = EditDistanceConfig(maxEditDistance: 2)
+    let matcher = FuzzyMatcher(config: MatchConfig(minScore: exactScore + 0.001, algorithm: .editDistance(edConfig)))
     let query = matcher.prepare("hello")
     var buffer = matcher.makeBuffer()
 
@@ -536,11 +542,11 @@ import Testing
 // MARK: - MatchConfig Sendable
 
 @Test func matchConfigIsSendable() {
-    let config: MatchConfig = MatchConfig(algorithm: .editDistance(EditDistanceConfig(maxEditDistance: 3)))
+    let config = MatchConfig(algorithm: .editDistance(EditDistanceConfig(maxEditDistance: 3)))
 
     // This test verifies compilation - MatchConfig conforms to Sendable
     Task {
-        let _ = config.editDistanceConfig!.maxEditDistance
+        _ = config.editDistanceConfig!.maxEditDistance
     }
 
     #expect(config.editDistanceConfig!.maxEditDistance == 3)
@@ -555,7 +561,7 @@ import Testing
     let cases: [GapPenalty] = [
         .none,
         .linear(perCharacter: 0.01),
-        .affine(open: 0.03, extend: 0.005),
+        .affine(open: 0.03, extend: 0.005)
     ]
 
     for original in cases {
@@ -619,7 +625,7 @@ import Testing
         .editDistance(),
         .editDistance(EditDistanceConfig(maxEditDistance: 1)),
         .smithWaterman(),
-        .smithWaterman(SmithWatermanConfig(scoreMatch: 20)),
+        .smithWaterman(SmithWatermanConfig(scoreMatch: 20))
     ]
 
     for original in cases {
@@ -637,7 +643,7 @@ import Testing
         .editDistance,
         .smithWaterman,
         MatchConfig(minScore: 0.7, algorithm: .editDistance(EditDistanceConfig(maxEditDistance: 1))),
-        MatchConfig(minScore: 0.5, algorithm: .smithWaterman(SmithWatermanConfig(penaltyGapStart: 5))),
+        MatchConfig(minScore: 0.5, algorithm: .smithWaterman(SmithWatermanConfig(penaltyGapStart: 5)))
     ]
 
     for original in configs {

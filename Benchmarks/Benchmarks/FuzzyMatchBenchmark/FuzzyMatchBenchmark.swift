@@ -1,4 +1,4 @@
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 //
 // This source file is part of the FuzzyMatch open source project
 //
@@ -9,7 +9,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 //
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 
 import Benchmark
 import FuzzyMatch
@@ -70,7 +70,7 @@ private func generateCamelCase(rng: inout SeededRandomNumberGenerator) -> String
     // Middle words (capitalized)
     for i in 1..<wordCount {
         let word: String
-        if i == wordCount - 1 && rng.next() % 3 == 0 {
+        if i == wordCount - 1 && rng.next().isMultiple(of: 3) {
             let suffixIdx = Int(rng.next() % UInt64(suffixes.count))
             word = suffixes[suffixIdx]
         } else {
@@ -95,7 +95,7 @@ private func generateSnakeCase(rng: inout SeededRandomNumberGenerator) -> String
 
     // Middle words
     for i in 1..<wordCount {
-        if i == wordCount - 1 && rng.next() % 3 == 0 {
+        if i == wordCount - 1 && rng.next().isMultiple(of: 3) {
             let suffixIdx = Int(rng.next() % UInt64(suffixes.count))
             parts.append(suffixes[suffixIdx])
         } else {
@@ -108,7 +108,7 @@ private func generateSnakeCase(rng: inout SeededRandomNumberGenerator) -> String
 }
 
 /// Generates a dataset of synthetic code identifiers
-private func generateDataset(count: Int, seed: UInt64 = 12345) -> [String] {
+private func generateDataset(count: Int, seed: UInt64 = 12_345) -> [String] {
     var rng = SeededRandomNumberGenerator(seed: seed)
     var dataset: [String] = []
     dataset.reserveCapacity(count)
@@ -116,7 +116,7 @@ private func generateDataset(count: Int, seed: UInt64 = 12345) -> [String] {
     for i in 0..<count {
         // 50% camelCase, 50% snake_case
         let identifier: String
-        if i % 2 == 0 {
+        if i.isMultiple(of: 2) {
             identifier = generateCamelCase(rng: &rng)
         } else {
             identifier = generateSnakeCase(rng: &rng)
@@ -163,7 +163,7 @@ private func generateLongString(approximateBytes: Int, seed: UInt64) -> String {
         let word = documentWords[wordIndex]
 
         // Occasionally capitalize for variety
-        if rng.next() % 10 == 0 {
+        if rng.next().isMultiple(of: 10) {
             result += word.prefix(1).uppercased() + word.dropFirst()
         } else {
             result += word
@@ -187,7 +187,7 @@ private func generateLongString(approximateBytes: Int, seed: UInt64) -> String {
 }
 
 /// Generates a dataset of long strings
-private func generateLongStringDataset(count: Int, bytesPerString: Int, seed: UInt64 = 54321) -> [String] {
+private func generateLongStringDataset(count: Int, bytesPerString: Int, seed: UInt64 = 54_321) -> [String] {
     var dataset: [String] = []
     dataset.reserveCapacity(count)
 
@@ -242,7 +242,7 @@ final class DatasetHolder: Sendable {
     var longStrings32KB: [String] {
         state.withLock { state in
             if state.longStrings32KB == nil {
-                state.longStrings32KB = generateLongStringDataset(count: 20, bytesPerString: 32 * 1024)
+                state.longStrings32KB = generateLongStringDataset(count: 20, bytesPerString: 32 * 1_024)
             }
             return state.longStrings32KB!
         }
@@ -252,7 +252,7 @@ final class DatasetHolder: Sendable {
     var longStrings64KB: [String] {
         state.withLock { state in
             if state.longStrings64KB == nil {
-                state.longStrings64KB = generateLongStringDataset(count: 10, bytesPerString: 64 * 1024)
+                state.longStrings64KB = generateLongStringDataset(count: 10, bytesPerString: 64 * 1_024)
             }
             return state.longStrings64KB!
         }
@@ -307,7 +307,6 @@ private func runConcurrentScoring(
 // MARK: - Benchmark Suite
 
 let benchmarks: @Sendable () -> Void = {
-
     // MARK: - Query Preparation Benchmark
 
     Benchmark(
@@ -807,5 +806,4 @@ let benchmarks: @Sendable () -> Void = {
             blackHole(totalMatches)
         }
     }
-
 }

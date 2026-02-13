@@ -1,4 +1,4 @@
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 //
 // This source file is part of the FuzzyMatch open source project
 //
@@ -9,7 +9,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 //
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 
 import Testing
 
@@ -21,7 +21,6 @@ import Testing
 /// The matcher strips these marks so decomposed forms match their base characters.
 @Suite("Combining Diacritical Mark Tests")
 struct CombiningMarkTests {
-
     // MARK: - Edit Distance Mode
 
     @Test("Decomposed café matches precomposed café (partial)")

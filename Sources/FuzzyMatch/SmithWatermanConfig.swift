@@ -1,4 +1,4 @@
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 //
 // This source file is part of the FuzzyMatch open source project
 //
@@ -9,7 +9,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 //
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 
 /// Configuration for the Smith-Waterman matching algorithm.
 ///
@@ -96,7 +96,7 @@ public struct SmithWatermanConfig: Sendable, Equatable, Codable {
     public var splitSpaces: Bool
 
     /// The default Smith-Waterman configuration with nucleo-inspired scoring constants.
-    public static let `default` = SmithWatermanConfig(
+    public static let `default` = Self(
         scoreMatch: 16,
         penaltyGapStart: 3,
         penaltyGapExtend: 1,

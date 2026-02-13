@@ -1,4 +1,4 @@
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 //
 // This source file is part of the FuzzyMatch open source project
 //
@@ -9,10 +9,10 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 //
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 
-import Testing
 @testable import FuzzyMatch
+import Testing
 
 // MARK: - Single Character Strings
 
@@ -134,7 +134,7 @@ import Testing
         "ab",
         "abc",
         "1234567890",
-        "hello_world_123",
+        "hello_world_123"
     ]
 
     for str in testStrings {
@@ -399,4 +399,3 @@ import Testing
     _ = matcher.score("abc", against: query, buffer: &buffer)
     // Result depends on edit distance and prefilters; test validates no crash
 }
-

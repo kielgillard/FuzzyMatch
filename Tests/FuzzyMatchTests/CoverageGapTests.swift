@@ -1,4 +1,4 @@
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 //
 // This source file is part of the FuzzyMatch open source project
 //
@@ -9,11 +9,11 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 //
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 
 import Foundation
-import Testing
 @testable import FuzzyMatch
+import Testing
 
 // MARK: - MatchKind.description (0% → 100%)
 
@@ -44,7 +44,7 @@ import Testing
     let high = ScoredMatch(score: 0.9, kind: .exact)
     #expect(low < high)
     #expect(!(high < low))
-    #expect(!(low < low))
+    #expect(!(low < low)) // swiftlint:disable:this identical_operands
 }
 
 @Test func scoredMatchDescription() {

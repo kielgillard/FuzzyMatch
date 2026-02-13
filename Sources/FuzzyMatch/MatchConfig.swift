@@ -1,4 +1,4 @@
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 //
 // This source file is part of the FuzzyMatch open source project
 //
@@ -9,7 +9,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 //
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 
 /// The matching algorithm to use for scoring.
 ///
@@ -461,7 +461,7 @@ public struct EditDistanceConfig: Sendable, Equatable, Codable {
     public var acronymWeight: Double
 
     /// The default edit distance configuration.
-    public static let `default` = EditDistanceConfig()
+    public static let `default` = Self()
 
     /// A preset with scoring constants aligned to fzf's proven ratios.
     ///
@@ -471,7 +471,7 @@ public struct EditDistanceConfig: Sendable, Equatable, Codable {
     /// - consecutive/match = 4/16 = 0.25 → consecutiveBonus = 0.06
     /// - gapStart/match = 3/16 = 0.1875 → gapOpen = 0.04
     /// - gapExtend/match = 1/16 = 0.0625 → gapExtend = 0.012
-    public static let fzfAligned = EditDistanceConfig(
+    public static let fzfAligned = Self(
         wordBoundaryBonus: 0.12,
         consecutiveBonus: 0.06,
         gapPenalty: .affine(open: 0.04, extend: 0.012)
@@ -624,7 +624,7 @@ public struct MatchConfig: Sendable, Equatable, Codable {
     public var algorithm: MatchingAlgorithm
 
     /// The default configuration using edit distance matching.
-    public static let editDistance = MatchConfig()
+    public static let editDistance = Self()
 
     /// A preset for Smith-Waterman local alignment matching.
     ///
@@ -635,7 +635,7 @@ public struct MatchConfig: Sendable, Equatable, Codable {
     /// ```swift
     /// let matcher = FuzzyMatcher(config: .smithWaterman)
     /// ```
-    public static let smithWaterman = MatchConfig(algorithm: .smithWaterman())
+    public static let smithWaterman = Self(algorithm: .smithWaterman())
 
     /// A preset with scoring constants aligned to fzf's proven ratios.
     ///
@@ -644,7 +644,7 @@ public struct MatchConfig: Sendable, Equatable, Codable {
     /// ```swift
     /// let matcher = FuzzyMatcher(config: .fzfAligned)
     /// ```
-    public static let fzfAligned = MatchConfig(algorithm: .editDistance(.fzfAligned))
+    public static let fzfAligned = Self(algorithm: .editDistance(.fzfAligned))
 
     /// Creates a new match configuration.
     ///

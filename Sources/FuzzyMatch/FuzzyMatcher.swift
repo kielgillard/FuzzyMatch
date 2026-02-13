@@ -1,4 +1,4 @@
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 //
 // This source file is part of the FuzzyMatch open source project
 //
@@ -9,7 +9,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 //
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 
 /// A high-performance fuzzy string matching library.
 ///
@@ -404,8 +404,7 @@ public struct FuzzyMatcher: Sendable {
         // Space-containing trigrams are excluded at computation time, so this
         // is safe for multi-word queries (see computeTrigrams for rationale).
         if query.lowercased.count >= 4
-            && query.trigrams.count > 3 * effectiveMaxEditDistance
-        {
+            && query.trigrams.count > 3 * effectiveMaxEditDistance {
             if !passesTrigramFilter(
                 candidateBytes: candidateSpan,
                 queryTrigrams: query.trigrams,
@@ -806,7 +805,7 @@ public struct FuzzyMatcher: Sendable {
         var score = max(0.3, 1.0 - gapRatio)
 
         // Apply match type weight
-        score = score * edConfig.substringWeight
+        score *= edConfig.substringWeight
 
         // Apply the DP-computed bonus
         // Cap bonuses at 80% recovery (consistent with prefix/substring paths).
@@ -1108,5 +1107,4 @@ public struct FuzzyMatcher: Sendable {
         if !prevIsAlnum { return true }
         return false
     }
-
 }

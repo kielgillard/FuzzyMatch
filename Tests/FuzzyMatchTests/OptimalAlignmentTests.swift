@@ -1,4 +1,4 @@
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 //
 // This source file is part of the FuzzyMatch open source project
 //
@@ -9,10 +9,10 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 //
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 
-import Testing
 @testable import FuzzyMatch
+import Testing
 
 // MARK: - Optimal Alignment DP Tests
 
@@ -116,7 +116,7 @@ private func runAlignment(
         ("gubi", "getUserById"),
         ("fb", "fooBar"),
         ("sn", "setName"),
-        ("config", "configuration"),
+        ("config", "configuration")
     ]
 
     let config = EditDistanceConfig()

@@ -1,4 +1,4 @@
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 //
 // This source file is part of the FuzzyMatch open source project
 //
@@ -9,10 +9,10 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 //
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 
-import Testing
 @testable import FuzzyMatch
+import Testing
 
 // MARK: - One-Shot score(_:against:) Tests
 
@@ -113,7 +113,7 @@ import Testing
         ("abc", "xyz"),                                         // nil
         ("a", "a"),                                             // exact single char
         ("apple", "apl"),                                       // prefix with edit
-        ("Bristol-Myers Squibb", "bms"),                        // acronym
+        ("Bristol-Myers Squibb", "bms")                        // acronym
     ]
 
     for (candidate, queryStr) in cases {
@@ -137,7 +137,7 @@ import Testing
         ("Goldman Sachs", "Goldamn"),
         ("Boeing", "Voeing"),
         ("Blackstone Inc", "blakstone"),
-        ("Mastercard", "Mastecard"),
+        ("Mastercard", "Mastecard")
     ]
 
     for (candidate, queryStr) in cases {
@@ -255,7 +255,7 @@ import Testing
         "getUser",       // prefix
         "getConfig",     // prefix
         "widget",        // substring (weaker)
-        "budgetTracker", // substring (weaker)
+        "budgetTracker" // substring (weaker)
     ]
 
     let top2 = matcher.topMatches(candidates, against: query, limit: 2)
@@ -276,7 +276,7 @@ import Testing
     let query = matcher.prepare("config")
     let candidates = [
         "appConfig", "configManager", "database", "userConfig",
-        "systemConfiguration", "settings", "configPath", "reconfigure",
+        "systemConfiguration", "settings", "configPath", "reconfigure"
     ]
 
     let convenience = matcher.topMatches(candidates, against: query, limit: 3)
@@ -377,7 +377,7 @@ import Testing
     let query = matcher.prepare("get")
     let candidates = [
         "get", "getUser", "widget", "getConfig", "budgetTracker",
-        "forgetting", "target", "gadget",
+        "forgetting", "target", "gadget"
     ]
 
     let convenience = matcher.matches(candidates, against: query)
@@ -413,7 +413,7 @@ import Testing
     let query = matcher.prepare("app")
     let candidates = [
         "appDelegate", "application", "myApp", "wrapper",
-        "disappear", "snapshot", "appConfig", "mappable",
+        "disappear", "snapshot", "appConfig", "mappable"
     ]
 
     let all = matcher.matches(candidates, against: query)
@@ -436,7 +436,7 @@ import Testing
     let candidates = ["database", "metadata", "dataSource", "update", "xyz"]
 
     let all = matcher.matches(candidates, against: query)
-    let topAll = matcher.topMatches(candidates, against: query, limit: 1000)
+    let topAll = matcher.topMatches(candidates, against: query, limit: 1_000)
 
     #expect(all.count == topAll.count)
 }

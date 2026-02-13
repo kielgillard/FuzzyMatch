@@ -1,4 +1,4 @@
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 //
 // This source file is part of the FuzzyMatch open source project
 //
@@ -9,10 +9,10 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 //
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 
-import Testing
 @testable import FuzzyMatch
+import Testing
 
 // MARK: - Trigram Computation
 
@@ -254,7 +254,7 @@ import Testing
         ("hello", "hallo"), // 1 substitution
         ("hello", "helllo"), // 1 insertion
         ("testing", "testng"), // 1 deletion
-        ("test", "tset"), // 1 transposition
+        ("test", "tset") // 1 transposition
     ]
 
     for (query, candidate) in testCases {

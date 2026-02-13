@@ -1,4 +1,4 @@
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 //
 // This source file is part of the FuzzyMatch open source project
 //
@@ -9,10 +9,10 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 //
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 
-import Testing
 @testable import FuzzyMatch
+import Testing
 
 // MARK: - Ranking Quality Tests
 //
@@ -149,7 +149,7 @@ private func assertRanksHigher(
     let results = rank("apple", against: [
         "Apple Inc",
         "Maple Finance",
-        "Snapple Group",
+        "Snapple Group"
     ])
     #expect(results.count >= 1)
     if let first = results.first {
@@ -162,7 +162,7 @@ private func assertRanksHigher(
     let results = rank("msft", against: [
         "MSFT.OQ",
         "MSFT.N",
-        "MICROSOFT CORP",
+        "MICROSOFT CORP"
     ])
     #expect(results.count >= 2)
 }
@@ -172,7 +172,7 @@ private func assertRanksHigher(
     let results = rank("eur", against: [
         "EUR/USD",
         "EUR/GBP",
-        "NEURAL TECH",
+        "NEURAL TECH"
     ])
     #expect(results.count >= 2)
 }
@@ -182,7 +182,7 @@ private func assertRanksHigher(
     let results = rank("ishares", against: [
         "iShares Core S&P 500",
         "iShares MSCI World",
-        "First Trust Shares",
+        "First Trust Shares"
     ])
     // iShares entries should rank higher (prefix match)
     if results.count >= 2 {
@@ -196,7 +196,7 @@ private func assertRanksHigher(
     let results = rank("test", against: [
         "test",
         "contest",
-        "attest",
+        "attest"
     ])
     // Exact match should have score 1.0
     let exactMatch = results.first { $0.candidate == "test" }
@@ -207,7 +207,7 @@ private func assertRanksHigher(
 @Test func prefixMatchRanksAboveSubstring() {
     let results = rank("get", against: [
         "getUser",
-        "budgetTracker",
+        "budgetTracker"
     ])
     #expect(results.count == 2)
     #expect(results[0].candidate == "getUser")
@@ -248,7 +248,7 @@ private func assertRanksHigher(
     // (less "gap" after the match)
     let results = rank("get", against: [
         "getUser",
-        "getUserByIdAndName",
+        "getUserByIdAndName"
     ])
     if results.count == 2 {
         #expect(results[0].candidate == "getUser")
@@ -304,7 +304,7 @@ private func assertRanksHigher(
         "STOX",
         "STOXX LIMITED",
         "XSTO",
-        "NASDAQ STOCKHOLM AB",
+        "NASDAQ STOCKHOLM AB"
     ], config: config)
 
     // XSTO should be first (exact match, score 1.0)

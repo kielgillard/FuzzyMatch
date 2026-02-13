@@ -1,4 +1,4 @@
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 //
 // This source file is part of the FuzzyMatch open source project
 //
@@ -9,10 +9,10 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 //
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 
-import Testing
 @testable import FuzzyMatch
+import Testing
 
 // MARK: - Exact Score Verification Tests
 //
@@ -360,7 +360,7 @@ import Testing
         ("helo", "hello"),       // Typo
         ("teh", "the"),          // Transposition
         ("abc", "abcdef"),       // Short query
-        ("x", "xyz"),            // Single char
+        ("x", "xyz")            // Single char
     ]
 
     for (queryStr, candidate) in testCases {

@@ -1,4 +1,4 @@
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 //
 // This source file is part of the FuzzyMatch open source project
 //
@@ -9,10 +9,10 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 //
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 
-import Testing
 @testable import FuzzyMatch
+import Testing
 
 // MARK: - Buffer Shrink Policy Tests
 
@@ -37,8 +37,8 @@ import Testing
     buffer.shrinkCheckInterval = 10
 
     // First, grow the buffer with a large input
-    buffer.ensureCapacity(queryLength: 200, candidateLength: 1000)
-    #expect(buffer.candidateStorage.bytes.count >= 1000)
+    buffer.ensureCapacity(queryLength: 200, candidateLength: 1_000)
+    #expect(buffer.candidateStorage.bytes.count >= 1_000)
     #expect(buffer.editDistanceState.row.count >= 201)
 
     // Record usage of small inputs

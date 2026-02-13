@@ -1,4 +1,4 @@
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 //
 // This source file is part of the FuzzyMatch open source project
 //
@@ -9,10 +9,10 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 //
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 
-import Testing
 @testable import FuzzyMatch
+import Testing
 
 @Suite("Tiny Query Fast Path Tests")
 struct TinyQueryFastPathTests {
@@ -50,7 +50,7 @@ struct TinyQueryFastPathTests {
             ("x", "index"),
             ("u", "user"),
             ("u", "User"),
-            ("5", "test5value"),
+            ("5", "test5value")
         ]
         for (q, c) in pairs {
             let query = matcher.prepare(q)

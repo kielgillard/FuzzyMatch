@@ -1,4 +1,4 @@
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 //
 // This source file is part of the FuzzyMatch open source project
 //
@@ -9,10 +9,10 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 //
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 
-import Testing
 @testable import FuzzyMatch
+import Testing
 
 // MARK: - Adaptive Edit Distance Tests
 //
@@ -156,7 +156,7 @@ private func rank(
         "Covestro AG",
         "COVIVIO HOTELS",
         "COVIVIO",
-        "Some Random String",
+        "Some Random String"
     ], config: pickerConfig)
 
     #expect(results.count >= 2)
@@ -173,7 +173,7 @@ private func rank(
         "COVH",
         "1COV",
         "Covestro AG",
-        "COVIVIO",
+        "COVIVIO"
     ])
 
     #expect(results.count >= 4)
@@ -211,7 +211,7 @@ private func rank(
     let results = rank("cov", against: [
         "Covestro AG",       // prefix match
         "Discovery Corp",    // "cov" appears as substring in "Discovery"... no
-        "RECOVERY LTD",      // "cov" appears as substring in "reCOVery"
+        "RECOVERY LTD"      // "cov" appears as substring in "reCOVery"
     ], config: pickerConfig)
 
     if let covestro = results.first(where: { $0.candidate == "Covestro AG" }),
@@ -239,7 +239,7 @@ private func rank(
         "EOBPM52609I484000P",
         "AOEOQ2609I201900C",
         "POZA12812F209000P",
-        "DE0006062144",
+        "DE0006062144"
     ]
 
     for candidate in randomStrings {
@@ -337,7 +337,7 @@ private func rank(
         "USD Fund",
         "USDA",
         "UDS",          // exact match
-        "Something Else",
+        "Something Else"
     ])
 
     // "UDS" exact match should be present

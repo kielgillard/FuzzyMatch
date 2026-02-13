@@ -1,4 +1,4 @@
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 //
 // This source file is part of the FuzzyMatch open source project
 //
@@ -9,7 +9,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 //
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 
 /// A prepared query optimized for repeated matching against multiple candidates.
 ///
@@ -48,7 +48,7 @@
 /// Multiple threads can use the same prepared query simultaneously with their own
 /// ``ScoringBuffer`` instances.
 public struct FuzzyQuery: Sendable, Equatable {
-    public static func == (lhs: FuzzyQuery, rhs: FuzzyQuery) -> Bool {
+    public static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.original == rhs.original
             && lhs.lowercased == rhs.lowercased
             && lhs.charBitmask == rhs.charBitmask
@@ -149,8 +149,7 @@ public struct FuzzyQuery: Sendable, Equatable {
 
         // Split multi-word Smith-Waterman queries into atoms
         if case .smithWaterman(let swConfig) = config.algorithm,
-            containsSpaces, swConfig.splitSpaces
-        {
+            containsSpaces, swConfig.splitSpaces {
             var result: [(start: Int, length: Int)] = []
             var segStart = 0
             for i in 0..<queryLength {

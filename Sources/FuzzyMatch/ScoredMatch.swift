@@ -1,4 +1,4 @@
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 //
 // This source file is part of the FuzzyMatch open source project
 //
@@ -9,7 +9,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 //
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 
 /// A scored match result containing the score and match kind.
 ///
@@ -105,7 +105,7 @@ public struct ScoredMatch: Sendable, Hashable, Comparable, Codable, CustomString
     ///   - lhs: The left-hand side match.
     ///   - rhs: The right-hand side match.
     /// - Returns: `true` if `lhs.score < rhs.score`.
-    public static func < (lhs: ScoredMatch, rhs: ScoredMatch) -> Bool {
+    public static func < (lhs: Self, rhs: Self) -> Bool {
         lhs.score < rhs.score
     }
 
@@ -150,7 +150,7 @@ public struct MatchResult: Sendable, Hashable, Comparable, Codable, CustomString
     ///   - lhs: The left-hand side result.
     ///   - rhs: The right-hand side result.
     /// - Returns: `true` if `lhs.match.score < rhs.match.score`.
-    public static func < (lhs: MatchResult, rhs: MatchResult) -> Bool {
+    public static func < (lhs: Self, rhs: Self) -> Bool {
         lhs.match < rhs.match
     }
 

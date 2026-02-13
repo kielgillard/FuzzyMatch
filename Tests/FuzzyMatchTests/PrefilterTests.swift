@@ -1,4 +1,4 @@
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 //
 // This source file is part of the FuzzyMatch open source project
 //
@@ -9,10 +9,10 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 //
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 
-import Testing
 @testable import FuzzyMatch
+import Testing
 
 // MARK: - Length Bounds Filter
 
@@ -40,7 +40,7 @@ import Testing
     // No upper limit - long candidates are allowed for subsequence matching
     // This test verifies the new behavior
     #expect(passesLengthBounds(candidateLength: 16, queryLength: 5, maxEditDistance: 2))
-    #expect(passesLengthBounds(candidateLength: 1000, queryLength: 5, maxEditDistance: 2))
+    #expect(passesLengthBounds(candidateLength: 1_000, queryLength: 5, maxEditDistance: 2))
 }
 
 @Test func lengthBoundsFilterEmptyQuery() {

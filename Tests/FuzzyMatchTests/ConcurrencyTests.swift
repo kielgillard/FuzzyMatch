@@ -1,4 +1,4 @@
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 //
 // This source file is part of the FuzzyMatch open source project
 //
@@ -9,7 +9,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 //
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 
 import Testing
 
@@ -96,7 +96,7 @@ private let candidates: [String] = [
     "Intuit Inc.", "Intuitive Surgical", "Invesco Ltd.",
     "IQVIA Holdings", "Iron Mountain", "J.B. Hunt Transport Services",
     "Jack Henry & Associates", "Jacobs Engineering", "Jazz Pharmaceuticals",
-    "Johnson & Johnson", "Johnson Controls International", "JPMorgan Chase",
+    "Johnson & Johnson", "Johnson Controls International", "JPMorgan Chase"
 ]
 
 @Test func concurrentEditDistanceMatchingIsConsistent() async {
@@ -218,8 +218,7 @@ private let candidates: [String] = [
                 var results: [(String, Double)] = []
                 for candidate in candidates {
                     if let match = edMatcher.score(
-                        candidate, against: edQuery, buffer: &buffer)
-                    {
+                        candidate, against: edQuery, buffer: &buffer) {
                         results.append((candidate, match.score))
                     }
                 }
@@ -241,8 +240,7 @@ private let candidates: [String] = [
                 var results: [(String, Double)] = []
                 for candidate in candidates {
                     if let match = swMatcher.score(
-                        candidate, against: swQuery, buffer: &buffer)
-                    {
+                        candidate, against: swQuery, buffer: &buffer) {
                         results.append((candidate, match.score))
                     }
                 }
@@ -258,8 +256,8 @@ private let candidates: [String] = [
     let sw = await swResults
 
     // Both should find matches (we don't compare across modes, just verify determinism)
-    #expect(ed.count > 0)
-    #expect(sw.count > 0)
+    #expect(!ed.isEmpty)
+    #expect(!sw.isEmpty)
 
     // Verify sequential produces the same as concurrent
     var seqEdBuffer = edMatcher.makeBuffer()

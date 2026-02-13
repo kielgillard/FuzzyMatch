@@ -90,6 +90,14 @@ let all = matcher.matches(candidates, against: query)
 - `bonusConsecutive` (4), `bonusBoundary` (8), `bonusBoundaryWhitespace` (10), `bonusBoundaryDelimiter` (9), `bonusCamelCase` (5)
 - `bonusFirstCharMultiplier` (2), `splitSpaces` (true)
 
+## Validation
+
+Always validate changes before committing, or earlier when complexity warrants it. Validation means running both the test suite and SwiftLint — the codebase must stay clean on both:
+
+```bash
+swift test && swiftlint lint
+```
+
 ## Testing
 
 Tests use Swift Testing framework (`@Test` macro, `#expect()` assertions). Test files mirror source structure:

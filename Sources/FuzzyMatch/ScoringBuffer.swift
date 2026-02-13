@@ -1,4 +1,4 @@
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 //
 // This source file is part of the FuzzyMatch open source project
 //
@@ -9,7 +9,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 //
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 
 /// Storage for lowercased candidate bytes and precomputed per-position bonus values.
 ///
@@ -250,7 +250,7 @@ public struct ScoringBuffer: Sendable {
     @usableFromInline var highWaterCandidateLength: Int = 0
     @usableFromInline var highWaterQueryLength: Int = 0
     @usableFromInline var callsSinceLastCheck: Int = 0
-    @usableFromInline var shrinkCheckInterval: Int = 1000
+    @usableFromInline var shrinkCheckInterval: Int = 1_000
 
     /// Creates a new scoring buffer with the specified initial capacity.
     ///

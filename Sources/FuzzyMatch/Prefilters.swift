@@ -1,4 +1,4 @@
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 //
 // This source file is part of the FuzzyMatch open source project
 //
@@ -9,7 +9,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 //
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 
 /// Prefilter functions for fast rejection of non-matching candidates.
 ///
@@ -501,4 +501,3 @@ internal func passesCharBitmask(
     let missingChars = queryMask & ~candidateMask
     return missingChars.nonzeroBitCount <= maxEditDistance
 }
-
