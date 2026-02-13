@@ -42,4 +42,4 @@ python3 Comparison/run-quality.py --ifrit
 
 ## Output
 
-Results are printed to stdout as formatted tables. During release preparation, these tables are copied into [COMPARISON.md](../COMPARISON.md). All queries are loaded from [`Resources/queries.tsv`](../Resources/queries.tsv) at runtime.
+Results are printed to stdout as formatted tables. During release preparation, these tables are copied into [COMPARISON.md](../Documentation/COMPARISON.md). All queries are loaded from [`Resources/queries.tsv`](../Resources/queries.tsv) at runtime.

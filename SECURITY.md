@@ -17,4 +17,4 @@ We aim to respond within 30 days for confirmed vulnerabilities.
 
 ## Fuzz Testing
 
-The library is continuously fuzz-tested using libFuzzer with AddressSanitizer, validating that no input combination causes crashes, out-of-bounds access, or invariant violations. See [Fuzz Testing](DAMERAU_LEVENSHTEIN.md#fuzz-testing) for details.
+The library is continuously fuzz-tested using libFuzzer with AddressSanitizer, validating that no input combination causes crashes, out-of-bounds access, or invariant violations. See [Fuzz Testing](Documentation/DAMERAU_LEVENSHTEIN.md#fuzz-testing) for details.

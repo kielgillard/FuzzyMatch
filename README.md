@@ -282,7 +282,7 @@ Tested against [fzf](https://github.com/junegunn/fzf), [nucleo](https://github.c
 
 FuzzyMatch (ED) agrees with fzf on all exact symbol, ISIN, symbol-with-spaces, and most prefix and substring queries. Its Damerau-Levenshtein foundation handles typos that fzf and nucleo miss entirely ("Voeing", "Gokdman Sachs"), and its acronym matching pass significantly outperforms all other matchers on abbreviation queries.
 
-See [COMPARISON.md](COMPARISON.md) for detailed results, per-category breakdowns, and top-3 analysis.
+See [COMPARISON.md](Documentation/COMPARISON.md) for detailed results, per-category breakdowns, and top-3 analysis.
 
 ### Smith-Waterman Mode Quality
 
@@ -325,7 +325,7 @@ Typical performance on Apple Silicon (M4 Max):
 
 ### Comparison Throughput
 
-On a 272K candidate corpus (M4 Max), FuzzyMatcher processes ~26M candidates/sec in edit distance mode and ~44M candidates/sec in Smith-Waterman mode — both comfortably interactive. nucleo (Rust) is faster at ~86M/sec but uses a different language runtime. Perhaps surprisingly, FuzzyMatch is also significantly faster than a naive `lowercased().contains()` baseline (~3M candidates/sec) — fuzzy matching with prefiltering can outperform brute-force substring search while delivering far better results for real-world user input. See [COMPARISON.md](COMPARISON.md) for full performance comparison.
+On a 272K candidate corpus (M4 Max), FuzzyMatcher processes ~26M candidates/sec in edit distance mode and ~44M candidates/sec in Smith-Waterman mode — both comfortably interactive. nucleo (Rust) is faster at ~86M/sec but uses a different language runtime. Perhaps surprisingly, FuzzyMatch is also significantly faster than a naive `lowercased().contains()` baseline (~3M candidates/sec) — fuzzy matching with prefiltering can outperform brute-force substring search while delivering far better results for real-world user input. See [COMPARISON.md](Documentation/COMPARISON.md) for full performance comparison.
 
 ### Zero-Allocation Scoring
 
@@ -391,7 +391,7 @@ The fuzz target cycles through ten `MatchConfig` variants — five edit distance
 
 A 60-second run typically covers 670K+ inputs at ~11,000 exec/s on an x86_64 Linux machine.
 
-See `Fuzz/FuzzyMatchFuzz.swift` for the full fuzz harness and [DAMERAU_LEVENSHTEIN.md](DAMERAU_LEVENSHTEIN.md#fuzz-testing) for detailed invariant documentation.
+See `Fuzz/FuzzyMatchFuzz.swift` for the full fuzz harness and [DAMERAU_LEVENSHTEIN.md](Documentation/DAMERAU_LEVENSHTEIN.md#fuzz-testing) for detailed invariant documentation.
 
 ## Unicode Support
 
@@ -401,7 +401,7 @@ The primary corpus and use case has been financial instruments (stock tickers, f
 
 Custom byte-level case folding is used instead of Swift's `String.lowercased()` to avoid per-call allocations and iterator overhead in the hot scoring path. An ASCII fast path (checking `String.isASCII` once per candidate) skips all multi-byte dispatch for the vast majority of candidates, keeping throughput at ~26M candidates/sec even with extended script support.
 
-Edit distance and trigrams operate at the byte level. See [DAMERAU_LEVENSHTEIN.md](DAMERAU_LEVENSHTEIN.md#unicode-support) for details on what is and isn't supported.
+Edit distance and trigrams operate at the byte level. See [DAMERAU_LEVENSHTEIN.md](Documentation/DAMERAU_LEVENSHTEIN.md#unicode-support) for details on what is and isn't supported.
 
 ### Limitations
 
@@ -431,7 +431,7 @@ let matcher = FuzzyMatcher()
 let matcher = FuzzyMatcher(config: .smithWaterman)
 ```
 
-For a detailed comparison of strengths, weaknesses, and per-category quality results, see [MATCHING_MODES.md](MATCHING_MODES.md). For algorithm internals, see [DAMERAU_LEVENSHTEIN.md](DAMERAU_LEVENSHTEIN.md) and [SMITH_WATERMAN.md](SMITH_WATERMAN.md).
+For a detailed comparison of strengths, weaknesses, and per-category quality results, see [MATCHING_MODES.md](Documentation/MATCHING_MODES.md). For algorithm internals, see [DAMERAU_LEVENSHTEIN.md](Documentation/DAMERAU_LEVENSHTEIN.md) and [SMITH_WATERMAN.md](Documentation/SMITH_WATERMAN.md).
 
 ## API Reference
 

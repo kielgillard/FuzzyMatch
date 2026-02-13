@@ -27,7 +27,7 @@ The library supports two matching algorithms selected via `MatchConfig.algorithm
 - **Edit Distance** (default) — Penalty-driven scoring using Damerau-Levenshtein. Multi-phase pipeline: exact → prefix → substring → subsequence → acronym. Best for typo tolerance, prefix-aware search, and short queries.
 - **Smith-Waterman** — Bonus-driven local alignment (similar to nucleo/fzf). Single DP pass + acronym fallback. Best for multi-word queries, high throughput, and code/file search.
 
-Both modes share the same API surface, zero-allocation hot path, and `score(_:against:buffer:)` entry point. See `MATCHING_MODES.md` for a detailed comparison.
+Both modes share the same API surface, zero-allocation hot path, and `score(_:against:buffer:)` entry point. See `Documentation/MATCHING_MODES.md` for a detailed comparison.
 
 ### Core Components
 
@@ -115,14 +115,14 @@ The Swift Package Benchmarks (`swift package --package-path Benchmarks benchmark
 
 Compare results before and after your change. If a "performance optimization" shows no improvement or causes a regression, roll it back.
 
-When updating tables in `COMPARISON.md`, always re-run both scripts and update from their output:
+When updating tables in `Documentation/COMPARISON.md`, always re-run both scripts and update from their output:
 
 ```bash
 bash Comparison/run-benchmarks.sh   # Performance comparison (nucleo, RapidFuzz, FuzzyMatch)
 python3 Comparison/run-quality.py   # Quality comparison (FuzzyMatcher, nucleo, RapidFuzz, fzf)
 ```
 
-Update the hardware/OS info block in `COMPARISON.md` each time. Take numbers directly from script output — do not hand-edit the tables.
+Update the hardware/OS info block in `Documentation/COMPARISON.md` each time. Take numbers directly from script output — do not hand-edit the tables.
 
 ## Comparison Suite Prerequisites
 
@@ -148,9 +148,9 @@ See [Agents/ADDING_TEST_QUERIES.md](Agents/ADDING_TEST_QUERIES.md) for the full 
 
 ## Documentation
 
-- `DAMERAU_LEVENSHTEIN.md` - Detailed Damerau-Levenshtein algorithm documentation with pseudocode and complexity analysis
-- `SMITH_WATERMAN.md` - Smith-Waterman local alignment algorithm documentation
-- `MATCHING_MODES.md` - High-level comparison of both matching modes
+- `Documentation/DAMERAU_LEVENSHTEIN.md` - Detailed Damerau-Levenshtein algorithm documentation with pseudocode and complexity analysis
+- `Documentation/SMITH_WATERMAN.md` - Smith-Waterman local alignment algorithm documentation
+- `Documentation/MATCHING_MODES.md` - High-level comparison of both matching modes
 
 ## Prepare Release
 

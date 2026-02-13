@@ -47,7 +47,7 @@ When asked to "prepare release", execute the following steps. **Maximize paralle
 
 5. **Run microbenchmarks**: `swift package --package-path Benchmarks benchmark`. Update the microbenchmark table in README.md with fresh numbers.
 6. **Update COMPARISON.md**: Once all benchmark and quality runs complete, replace performance and quality tables with fresh output. Update the hardware/OS info block.
-7. **Review DAMERAU_LEVENSHTEIN.md and SMITH_WATERMAN.md**: Analyze the current implementation and ensure the algorithm documentation accurately reflects the code — update any sections that are out of date (prefilter pipeline, scoring logic, data structures, complexity analysis, etc.).
+7. **Review Documentation/DAMERAU_LEVENSHTEIN.md and Documentation/SMITH_WATERMAN.md**: Analyze the current implementation and ensure the algorithm documentation accurately reflects the code — update any sections that are out of date (prefilter pipeline, scoring logic, data structures, complexity analysis, etc.).
 8. **Review README.md**: Ensure it reflects the current state of the project — performance claims, feature list, API examples, and any other content that may have changed.
 9. **Update DocC documentation**: Review and update all DocC documentation (source-level `///` comments and any `.docc` catalog files) to accurately reflect the current API, parameters, return types, and behavior. Ensure new public APIs are documented and outdated descriptions are corrected.
 10. **Report**: Summarize what was updated and any discrepancies found.
