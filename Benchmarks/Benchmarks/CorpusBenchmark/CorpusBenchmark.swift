@@ -136,7 +136,7 @@ final class CorpusHolder: Sendable {
             case "symbol": return state.symbolCandidates!
             case "name": return state.nameCandidates!
             case "isin": return state.isinCandidates!
-            default: return state.symbolCandidates!
+            default: fatalError("Unknown query field '\(field)' in queries.tsv")
             }
         }
     }
