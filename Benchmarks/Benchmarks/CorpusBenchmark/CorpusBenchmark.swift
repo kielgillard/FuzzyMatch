@@ -149,26 +149,40 @@ final class CorpusHolder: Sendable {
     }
 }
 
+// MARK: - Helpers
+
+/// Cycles through queries × candidates, calling `score` for each scaled iteration.
+/// All corpus benchmarks share this pattern — they differ only in the scoring closure.
+func runCycling(
+    _ benchmark: Benchmark,
+    pools: [[String]],
+    queryCount: Int,
+    score: (String, Int) -> ScoredMatch?
+) {
+    let candidateCount = pools[0].count
+    var qi = 0
+    var ci = 0
+    for _ in benchmark.scaledIterations {
+        blackHole(score(pools[qi][ci], qi))
+        ci &+= 1
+        if ci >= candidateCount {
+            ci = 0
+            qi &+= 1
+            if qi >= queryCount {
+                qi = 0
+            }
+        }
+    }
+}
+
 // MARK: - Benchmark Suite
 
 let benchmarks: @Sendable () -> Void = {
     let holder = CorpusHolder.shared
 
-    let allCategories = [
-        "exact_symbol",
-        "exact_name",
-        "exact_isin",
-        "prefix",
-        "typo",
-        "substring",
-        "multi_word",
-        "symbol_spaces",
-        "abbreviation"
-    ]
-
     // MARK: - Per-Category Edit Distance Benchmarks
 
-    for category in allCategories {
+    for category in holder.categories {
         Benchmark(
             "ED - \(category)",
             configuration: .init(
@@ -184,20 +198,9 @@ let benchmarks: @Sendable () -> Void = {
 
             let prepared = queries.map { matcher.prepare($0.text) }
             let pools = queries.map { holder.candidates(for: $0.field) }
-            let candidateCount = pools[0].count
 
-            var qi = 0
-            var ci = 0
-            for _ in benchmark.scaledIterations {
-                blackHole(matcher.score(pools[qi][ci], against: prepared[qi], buffer: &buffer))
-                ci &+= 1
-                if ci >= candidateCount {
-                    ci = 0
-                    qi &+= 1
-                    if qi >= prepared.count {
-                        qi = 0
-                    }
-                }
+            runCycling(benchmark, pools: pools, queryCount: prepared.count) { candidate, qi in
+                matcher.score(candidate, against: prepared[qi], buffer: &buffer)
             }
         }
     }
@@ -219,20 +222,9 @@ let benchmarks: @Sendable () -> Void = {
 
         let prepared = queries.map { matcher.prepare($0.text) }
         let pools = queries.map { holder.candidates(for: $0.field) }
-        let candidateCount = pools[0].count
 
-        var qi = 0
-        var ci = 0
-        for _ in benchmark.scaledIterations {
-            blackHole(matcher.score(pools[qi][ci], against: prepared[qi], buffer: &buffer))
-            ci &+= 1
-            if ci >= candidateCount {
-                ci = 0
-                qi &+= 1
-                if qi >= prepared.count {
-                    qi = 0
-                }
-            }
+        runCycling(benchmark, pools: pools, queryCount: prepared.count) { candidate, qi in
+            matcher.score(candidate, against: prepared[qi], buffer: &buffer)
         }
     }
 
@@ -249,20 +241,9 @@ let benchmarks: @Sendable () -> Void = {
 
         let queryTexts = queries.map(\.text)
         let pools = queries.map { holder.candidates(for: $0.field) }
-        let candidateCount = pools[0].count
 
-        var qi = 0
-        var ci = 0
-        for _ in benchmark.scaledIterations {
-            blackHole(matcher.score(pools[qi][ci], against: queryTexts[qi]))
-            ci &+= 1
-            if ci >= candidateCount {
-                ci = 0
-                qi &+= 1
-                if qi >= queryTexts.count {
-                    qi = 0
-                }
-            }
+        runCycling(benchmark, pools: pools, queryCount: queryTexts.count) { candidate, qi in
+            matcher.score(candidate, against: queryTexts[qi])
         }
     }
 
@@ -281,20 +262,9 @@ let benchmarks: @Sendable () -> Void = {
 
         let prepared = queries.map { matcher.prepare($0.text) }
         let pools = queries.map { holder.candidates(for: $0.field) }
-        let candidateCount = pools[0].count
 
-        var qi = 0
-        var ci = 0
-        for _ in benchmark.scaledIterations {
-            blackHole(matcher.score(pools[qi][ci], against: prepared[qi], buffer: &buffer))
-            ci &+= 1
-            if ci >= candidateCount {
-                ci = 0
-                qi &+= 1
-                if qi >= prepared.count {
-                    qi = 0
-                }
-            }
+        runCycling(benchmark, pools: pools, queryCount: prepared.count) { candidate, qi in
+            matcher.score(candidate, against: prepared[qi], buffer: &buffer)
         }
     }
 }
