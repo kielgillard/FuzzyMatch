@@ -307,16 +307,50 @@ private func runConcurrentScoring(
 // MARK: - Benchmark Suite
 
 let benchmarks: @Sendable () -> Void = {
+    // MARK: - Shared Configuration
+
+    let metrics: [BenchmarkMetric] = [
+        .instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount
+    ]
+
+    let defaultThreshold: BenchmarkThresholds = .init(relative: [.p25: 15.0, .p50: 15.0, .p75: 15.0])
+    let defaultThresholds: [BenchmarkMetric: BenchmarkThresholds] = [
+        .instructions: defaultThreshold,
+        .mallocCountTotal: defaultThreshold,
+        .objectAllocCount: defaultThreshold,
+        .retainCount: defaultThreshold,
+        .releaseCount: defaultThreshold
+    ]
+
+    let configMega = Benchmark.Configuration(
+        metrics: metrics, warmupIterations: 1, scalingFactor: .mega, thresholds: defaultThresholds
+    )
+
+    let configKilo = Benchmark.Configuration(
+        metrics: metrics, warmupIterations: 1, scalingFactor: .kilo, thresholds: defaultThresholds
+    )
+
+    let configOne = Benchmark.Configuration(
+        metrics: metrics, warmupIterations: 1, scalingFactor: .one, thresholds: defaultThresholds
+    )
+
+    let concurrentThreshold: BenchmarkThresholds = .init(relative: [.p25: 25.0, .p50: 25.0, .p75: 25.0])
+    let configOneConcurrent = Benchmark.Configuration(
+        metrics: metrics, warmupIterations: 1, scalingFactor: .one,
+        thresholds: [
+            .instructions: concurrentThreshold,
+            .mallocCountTotal: concurrentThreshold,
+            .objectAllocCount: concurrentThreshold,
+            .retainCount: concurrentThreshold,
+            .releaseCount: concurrentThreshold
+        ]
+    )
+
     // MARK: - Query Preparation Benchmark
 
     Benchmark(
         "Query preparation throughput",
-        configuration: .init(
-            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
-            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
-            warmupIterations: 3,
-            scalingFactor: .mega
-        )
+        configuration: configMega
     ) { benchmark in
         let matcher = FuzzyMatcher()
         let testQueries = realisticQueries5Char + realisticQueries10Char
@@ -332,12 +366,7 @@ let benchmarks: @Sendable () -> Void = {
 
     Benchmark(
         "Prefilter rejection (best case - no matches)",
-        configuration: .init(
-            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
-            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
-            warmupIterations: 3,
-            scalingFactor: .kilo
-        )
+        configuration: configKilo
     ) { benchmark in
         let smallDataset = DatasetHolder.shared.smallDataset
         let matcher = FuzzyMatcher()
@@ -353,12 +382,7 @@ let benchmarks: @Sendable () -> Void = {
 
     Benchmark(
         "Prefilter pass-through (worst case - many potential matches)",
-        configuration: .init(
-            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
-            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
-            warmupIterations: 3,
-            scalingFactor: .kilo
-        )
+        configuration: configKilo
     ) { benchmark in
         let smallDataset = DatasetHolder.shared.smallDataset
         let matcher = FuzzyMatcher()
@@ -376,12 +400,7 @@ let benchmarks: @Sendable () -> Void = {
 
     Benchmark(
         "Full scoring - 1 char query",
-        configuration: .init(
-            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
-            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
-            warmupIterations: 3,
-            scalingFactor: .kilo
-        )
+        configuration: configKilo
     ) { benchmark in
         let smallDataset = DatasetHolder.shared.smallDataset
         let matcher = FuzzyMatcher()
@@ -397,12 +416,7 @@ let benchmarks: @Sendable () -> Void = {
 
     Benchmark(
         "Full scoring - 3 char query",
-        configuration: .init(
-            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
-            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
-            warmupIterations: 3,
-            scalingFactor: .kilo
-        )
+        configuration: configKilo
     ) { benchmark in
         let smallDataset = DatasetHolder.shared.smallDataset
         let matcher = FuzzyMatcher()
@@ -418,12 +432,7 @@ let benchmarks: @Sendable () -> Void = {
 
     Benchmark(
         "Full scoring - 5 char query",
-        configuration: .init(
-            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
-            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
-            warmupIterations: 3,
-            scalingFactor: .kilo
-        )
+        configuration: configKilo
     ) { benchmark in
         let smallDataset = DatasetHolder.shared.smallDataset
         let matcher = FuzzyMatcher()
@@ -439,12 +448,7 @@ let benchmarks: @Sendable () -> Void = {
 
     Benchmark(
         "Full scoring - 10 char query",
-        configuration: .init(
-            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
-            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
-            warmupIterations: 3,
-            scalingFactor: .kilo
-        )
+        configuration: configKilo
     ) { benchmark in
         let smallDataset = DatasetHolder.shared.smallDataset
         let matcher = FuzzyMatcher()
@@ -462,12 +466,7 @@ let benchmarks: @Sendable () -> Void = {
 
     Benchmark(
         "Full dataset scoring (1M candidates, single-threaded)",
-        configuration: .init(
-            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
-            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
-            warmupIterations: 1,
-            scalingFactor: .one
-        )
+        configuration: configOne
     ) { benchmark in
         let fullDataset = DatasetHolder.shared.fullDataset
         let matcher = FuzzyMatcher()
@@ -489,12 +488,7 @@ let benchmarks: @Sendable () -> Void = {
 
     Benchmark(
         "Concurrent scoring (4 workers, 1M candidates)",
-        configuration: .init(
-            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
-            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
-            warmupIterations: 1,
-            scalingFactor: .one
-        )
+        configuration: configOneConcurrent
     ) { benchmark in
         let fullDataset = DatasetHolder.shared.fullDataset
         let matcher = FuzzyMatcher()
@@ -516,12 +510,7 @@ let benchmarks: @Sendable () -> Void = {
 
     Benchmark(
         "Concurrent scoring (8 workers, 1M candidates)",
-        configuration: .init(
-            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
-            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
-            warmupIterations: 1,
-            scalingFactor: .one
-        )
+        configuration: configOneConcurrent
     ) { benchmark in
         let fullDataset = DatasetHolder.shared.fullDataset
         let matcher = FuzzyMatcher()
@@ -543,12 +532,7 @@ let benchmarks: @Sendable () -> Void = {
 
     Benchmark(
         "Concurrent scoring (16 workers, 1M candidates)",
-        configuration: .init(
-            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
-            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
-            warmupIterations: 1,
-            scalingFactor: .one
-        )
+        configuration: configOneConcurrent
     ) { benchmark in
         let fullDataset = DatasetHolder.shared.fullDataset
         let matcher = FuzzyMatcher()
@@ -572,12 +556,7 @@ let benchmarks: @Sendable () -> Void = {
 
     Benchmark(
         "Best case - early rejection (uncommon query)",
-        configuration: .init(
-            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
-            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
-            warmupIterations: 3,
-            scalingFactor: .kilo
-        )
+        configuration: configKilo
     ) { benchmark in
         let smallDataset = DatasetHolder.shared.smallDataset
         let matcher = FuzzyMatcher()
@@ -593,12 +572,7 @@ let benchmarks: @Sendable () -> Void = {
 
     Benchmark(
         "Worst case - many matches (common query)",
-        configuration: .init(
-            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
-            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
-            warmupIterations: 3,
-            scalingFactor: .kilo
-        )
+        configuration: configKilo
     ) { benchmark in
         let smallDataset = DatasetHolder.shared.smallDataset
         let matcher = FuzzyMatcher()
@@ -616,12 +590,7 @@ let benchmarks: @Sendable () -> Void = {
 
     Benchmark(
         "Long strings (32KB) - short query (3 char)",
-        configuration: .init(
-            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
-            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
-            warmupIterations: 2,
-            scalingFactor: .one
-        )
+        configuration: configOne
     ) { benchmark in
         let longStrings = DatasetHolder.shared.longStrings32KB
         let matcher = FuzzyMatcher()
@@ -637,12 +606,7 @@ let benchmarks: @Sendable () -> Void = {
 
     Benchmark(
         "Long strings (32KB) - medium query (6 char)",
-        configuration: .init(
-            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
-            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
-            warmupIterations: 2,
-            scalingFactor: .one
-        )
+        configuration: configOne
     ) { benchmark in
         let longStrings = DatasetHolder.shared.longStrings32KB
         let matcher = FuzzyMatcher()
@@ -658,12 +622,7 @@ let benchmarks: @Sendable () -> Void = {
 
     Benchmark(
         "Long strings (32KB) - long query (12 char)",
-        configuration: .init(
-            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
-            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
-            warmupIterations: 2,
-            scalingFactor: .one
-        )
+        configuration: configOne
     ) { benchmark in
         let longStrings = DatasetHolder.shared.longStrings32KB
         let matcher = FuzzyMatcher()
@@ -679,12 +638,7 @@ let benchmarks: @Sendable () -> Void = {
 
     Benchmark(
         "Long strings (64KB) - medium query (6 char)",
-        configuration: .init(
-            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
-            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
-            warmupIterations: 2,
-            scalingFactor: .one
-        )
+        configuration: configOne
     ) { benchmark in
         let longStrings = DatasetHolder.shared.longStrings64KB
         let matcher = FuzzyMatcher()
@@ -700,12 +654,7 @@ let benchmarks: @Sendable () -> Void = {
 
     Benchmark(
         "Long strings (32KB) - no match query",
-        configuration: .init(
-            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
-            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
-            warmupIterations: 2,
-            scalingFactor: .one
-        )
+        configuration: configOne
     ) { benchmark in
         let longStrings = DatasetHolder.shared.longStrings32KB
         let matcher = FuzzyMatcher()
@@ -723,12 +672,7 @@ let benchmarks: @Sendable () -> Void = {
 
     Benchmark(
         "Long strings (32KB) - concurrent 4 workers",
-        configuration: .init(
-            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
-            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
-            warmupIterations: 2,
-            scalingFactor: .one
-        )
+        configuration: configOneConcurrent
     ) { benchmark in
         let longStrings = DatasetHolder.shared.longStrings32KB
         let matcher = FuzzyMatcher()
@@ -750,12 +694,7 @@ let benchmarks: @Sendable () -> Void = {
 
     Benchmark(
         "Long strings (32KB) - concurrent 8 workers",
-        configuration: .init(
-            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
-            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
-            warmupIterations: 2,
-            scalingFactor: .one
-        )
+        configuration: configOneConcurrent
     ) { benchmark in
         let longStrings = DatasetHolder.shared.longStrings32KB
         let matcher = FuzzyMatcher()
@@ -777,12 +716,7 @@ let benchmarks: @Sendable () -> Void = {
 
     Benchmark(
         "Long strings (64KB) - concurrent 4 workers",
-        configuration: .init(
-            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
-            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
-            warmupIterations: 2,
-            scalingFactor: .one
-        )
+        configuration: configOneConcurrent
     ) { benchmark in
         let longStrings = DatasetHolder.shared.longStrings64KB
         let matcher = FuzzyMatcher()
@@ -804,12 +738,7 @@ let benchmarks: @Sendable () -> Void = {
 
     Benchmark(
         "Long strings (64KB) - concurrent 8 workers",
-        configuration: .init(
-            metrics: [.instructions, .mallocCountTotal, .objectAllocCount, .retainCount, .releaseCount],
-            // metrics: [.cpuTotal, .wallClock, .throughput],  // Local profiling (wallclock)
-            warmupIterations: 2,
-            scalingFactor: .one
-        )
+        configuration: configOneConcurrent
     ) { benchmark in
         let longStrings = DatasetHolder.shared.longStrings64KB
         let matcher = FuzzyMatcher()

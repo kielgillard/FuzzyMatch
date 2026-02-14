@@ -68,11 +68,11 @@ Computing edit distance is O(nm), so FuzzyMatch uses fast prefilters to reject m
 
 ### Stage 1: Length Bounds — O(1)
 
-If the candidate is shorter than `queryLength - maxEditDistance`, it would require more deletions than allowed. No upper bound is enforced to support subsequence matching of short queries against long candidates.
+If the candidate is shorter than `queryLength - effectiveMaxEditDistance`, it would require more deletions than allowed. The `effectiveMaxEditDistance` is tightened for short queries (e.g., a 4-char query with `maxEditDistance=2` gets an effective value of 1). No upper bound is enforced to support subsequence matching of short queries against long candidates.
 
 ### Stage 2: Character Bitmask — O(1)
 
-A 37-bit bloom filter tracks character presence (a-z, 0-9, underscore). The number of distinct missing character types must be within an adaptive tolerance:
+A 64-bit bitmask tracks character presence (a-z, 0-9, underscore, plus 2-byte UTF-8 characters hashed into the upper bits). The number of distinct missing character types must be within an adaptive tolerance:
 
 ```
 missingChars = queryMask & ~candidateMask
@@ -80,13 +80,13 @@ bitmaskTolerance = queryLength <= 3 ? 0 : effectiveMaxEditDistance
 pass = (popcount(missingChars) <= bitmaskTolerance)
 ```
 
-For queries of 4+ characters, this allows substitution typos (where a character in the query is replaced by a different character in the candidate) while still quickly rejecting candidates that are too different. For example, "hein" can match "heia" (one missing character type, within edit budget) but a query with three missing character types would be rejected when `maxEditDistance` is 2.
+For queries of 4+ characters, this allows substitution typos (where a character in the query is replaced by a different character in the candidate) while still quickly rejecting candidates that are too different. For example, "hein" can match "heia" (one missing character type, within `bitmaskTolerance` of 1) but a query with three missing character types would be rejected.
 
-For very short queries (≤3 characters), the tolerance is 0 (strict): with only 1-3 distinct character types, allowing even one missing type lets nearly everything through, flooding the expensive edit distance computation with candidates that will ultimately be rejected.
+For very short queries (≤3 characters), the tolerance is 0 (strict): with only 1-3 distinct character types, allowing even one missing type lets nearly everything through, defeating the purpose of the prefilter. This means substitution typos (e.g., "UES" for "USD") are not detected for short queries, but transposition typos (e.g., "UDS" for "USD") still work because they involve the same character set.
 
 ### Stage 3: Trigram Similarity — O(n)
 
-Trigrams are consecutive 3-character sequences. The candidate must share at least `queryTrigramCount - 3 * maxEditDistance` trigrams with the query. Each edit can destroy up to 3 trigrams (a transposition at position i affects trigrams at i-2..i, i-1..i+1, and i..i+2), hence the factor of 3. This filter is only applied for queries of 4+ characters whose trigram count exceeds the tolerance threshold. Space-containing trigrams are excluded at computation time, so multi-word queries still pass through the filter.
+Trigrams are consecutive 3-character sequences. The candidate must share at least `queryTrigramCount - 3 * effectiveMaxEditDistance` trigrams with the query. Each edit can destroy up to 3 trigrams (a transposition at position i affects trigrams at i-2..i, i-1..i+1, and i..i+2), hence the factor of 3. This filter is only applied for queries of 4+ characters whose trigram count exceeds the tolerance threshold. Space-containing trigrams are excluded at computation time, so multi-word queries still pass through the filter.
 
 ## Scoring Model
 

@@ -141,14 +141,16 @@ Computing edit distance is O(nm), which is expensive for large candidate sets. F
 
 **Complexity:** O(1)
 
-If the edit distance between two strings exceeds `maxEditDistance`, their lengths must satisfy certain bounds.
+If the edit distance between two strings exceeds the effective edit distance budget, their lengths must satisfy certain bounds.
 
 ```
-minLength = queryLength - maxEditDistance
+minLength = queryLength - effectiveMaxEditDistance
 ```
+
+Note: `effectiveMaxEditDistance` is tightened for short queries — see [Query Preparation](#query-preparation) for the formula. For a 4-character query with `maxEditDistance=2`, the effective value is `min(2, max(1, 3/2)) = 1`, so `minLength = 4 - 1 = 3`, not `4 - 2 = 2`.
 
 **Rationale:**
-- Minimum: If candidate is shorter than `query - maxEditDistance`, we'd need more deletions than allowed
+- Minimum: If candidate is shorter than `query - effectiveMaxEditDistance`, we'd need more deletions than allowed
 - No upper limit: Subsequence matching can match short queries against long candidates (e.g., "fb" → "file_browser")
 
 ### Stage 2: Character Bitmask
@@ -170,13 +172,13 @@ bitmaskTolerance = queryLength <= 3 ? 0 : effectiveMaxEditDistance
 pass = popcount(missingChars) <= bitmaskTolerance
 ```
 
-**Adaptive tolerance:** For queries of 4+ characters, the tolerance equals `effectiveMaxEditDistance`, allowing substitution typos (each edit can account for one missing character type). For very short queries (≤3 characters), tolerance is 0 (strict) — with only 1-3 distinct character types, allowing even one missing type lets nearly everything through, defeating the purpose of the prefilter.
+**Adaptive tolerance:** For queries of 4+ characters, the tolerance equals `effectiveMaxEditDistance`, allowing substitution typos (each edit can account for one missing character type). For very short queries (≤3 characters), tolerance is 0 (strict) — with only 1-3 distinct character types, allowing even one missing type lets nearly everything through, defeating the purpose of the prefilter. This means substitution typos (e.g., "UES" for "USD") are not detected for short queries, but transposition typos (e.g., "UDS" for "USD") still work because they involve the same character set.
 
 **Example:**
 - Query "gubi" matching "getUserById": g, u, b, i all exist → 0 missing, passes
-- Query "hein" matching "heia": 'n' missing → 1 missing ≤ maxEditDistance(2), passes (substitution)
+- Query "hein" matching "heia": 'n' missing → 1 missing ≤ bitmaskTolerance(1), passes (substitution). Note: for "hein" (4 chars), `effectiveMaxEditDistance = min(2, max(1, 3/2)) = 1`, and `bitmaskTolerance = 1` (since queryLength > 3).
 - Query "teh" matching "the": t, e, h all exist → 0 missing, passes (transposition handled by edit distance)
-- Query "xyz" matching "abc": x, y, z all missing → 3 missing > maxEditDistance(2), fails
+- Query "xyz" matching "abc": x, y, z all missing → 3 missing > bitmaskTolerance, fails
 
 ### Stage 3: Trigram Filtering
 
@@ -188,7 +190,7 @@ Trigrams are consecutive 3-character sequences. If two strings are similar, they
 ```
 queryTrigrams = {"get", "etU", "tUs", "Use", "ser"}  // for "getUser"
 sharedCount = count trigrams in candidate that appear in queryTrigrams
-pass = sharedCount >= queryTrigrams.count - 3 * maxEditDistance
+pass = sharedCount >= queryTrigrams.count - 3 * effectiveMaxEditDistance
 ```
 
 Each edit operation can destroy up to 3 trigrams (a transposition at position i affects trigrams at i-2..i, i-1..i+1, and i..i+2), hence the factor of 3. This avoids false rejections on Damerau-Levenshtein transposition typos.
@@ -260,7 +262,7 @@ For non-exact matches (distance > 0), bonuses are capped at 80% of the gap betwe
 
 #### Same-Length Near-Exact Boost
 
-When the candidate has the same length as the query but `distance > 0` (e.g., a single transposition like "MFST" for "MSFT"), the prefix path applies an additional recovery: 70% of the gap to 1.0 is recovered before bonuses are applied. This gives near-exact same-length matches a significant score advantage over longer candidates that happen to contain the query as a prefix.
+When the candidate has the same length as the query but `distance > 0` (e.g., a single transposition like "UDS" → "USD" or "MFST" → "MSFT"), the prefix path applies an additional recovery: 70% of the gap to 1.0 is recovered before bonuses are applied. This applies to queries of any length — including 2-3 character queries — and gives near-exact same-length matches a significant score advantage over longer candidates that happen to contain the query as a prefix.
 
 #### Short Query Same-Length Restriction
 
@@ -534,7 +536,7 @@ function calculateBonuses(positions, boundaryMask, config):
 
 ## Subsequence Matching
 
-When edit distance matching fails (e.g., query "gubi" with maxEditDistance 2 cannot match "getUserById"), FuzzyMatcher falls back to subsequence matching.
+When edit distance matching fails (e.g., query "gubi" exceeds the effectiveMaxEditDistance threshold against "getUserById"), FuzzyMatcher falls back to subsequence matching.
 
 ### Algorithm
 
@@ -586,7 +588,7 @@ The gap before the first match is included so that matches starting later in the
 Query: "gubi"
 Candidate: "getUserById"
 
-Edit distance would require 7+ edits → exceeds maxEditDistance
+Prefix/substring edit distance exceeds effectiveMaxEditDistance threshold
 Subsequence match finds: g(0), U(3), B(7), I(9)
 All at word boundaries → high bonus
 Final score ≈ 0.64 (matches well)
@@ -1013,9 +1015,29 @@ function score(candidate, query, buffer):
     prefixDist = prefixEditDistance(query, candidate)
     if prefixDist != nil:
         score = normalizedScore(prefixDist, query.length, prefixWeight)
+
+        // Same-length near-exact boost (e.g., "UDS" → "USD", "MFST" → "MSFT")
+        if candidate.length == query.length and prefixDist > 0:
+            score += (1.0 - score) * 0.7
+
+        // Calculate bonuses from match positions
         positions = findMatchPositions(query, candidate, boundaryMask)
         if positions != nil:
-            score += calculateBonuses(positions, boundaryMask, config)
+            bonuses = calculateBonuses(positions, boundaryMask, config)
+            // Cap bonuses: non-exact matches can recover at most 80% of gap to 1.0
+            if prefixDist > 0:
+                maxBonus = (1.0 - score) * 0.8
+                score += min(bonuses, maxBonus)
+            else:
+                score = min(score + bonuses, 1.0)
+
+        // Length penalty (excess candidate length)
+        lengthPenalty = (candidate.length - query.length) × config.lengthPenalty
+        // Exact prefix matches recover 90% of length penalty
+        if prefixDist == 0:
+            lengthPenalty -= min(lengthPenalty × 0.9, 0.15)
+        score -= lengthPenalty
+
         if score >= minScore:
             bestScore = score
 
